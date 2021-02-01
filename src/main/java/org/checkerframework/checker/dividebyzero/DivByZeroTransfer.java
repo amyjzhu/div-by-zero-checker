@@ -121,44 +121,46 @@ public class DivByZeroTransfer extends CFTransfer {
     }
 
     private AnnotationMirror plusTransfer(AnnotationMirror lhs, AnnotationMirror rhs) {
+        // two positives or two negatives retains the sign
         if (lhs == positive() && rhs == positive()) {
             return positive();
         } else if (lhs == negative() && rhs == negative()) {
             return negative();
+        // if either side is zero, there's no change
         } else if (lhs == zero()) {
             return rhs; 
         } else if (rhs == zero()) {
             return lhs;
-        } else if (lhs == divbyzero() || rhs == divbyzero()) {
-            return divbyzero();
-        } else { // e,g. NotZero plus either Pos, Neg, or NotZero
+        } else { 
+            // Who knows? includes pos + neg cases, notzero cases, and maybezero cases
             return maybezero(); 
         }
     }
 
     private AnnotationMirror minusTransfer(AnnotationMirror lhs, AnnotationMirror rhs) {
+        // if the sign stays the same, we have the same precision
         if (lhs == positive() && rhs == negative()) {
             return positive();
         } else if (lhs == negative() && rhs == positive()) {
             return negative();
-        } else if (lhs == zero() && rhs == zero()) {
-            return zero();
+        // x - 0 does nothing
+        } else if (rhs == zero()) {
+            return lhs;
+        // if it's 0 - x we flip the sign for + and -
         } else if (lhs == zero()) {
             if (rhs == positive()) {
                 return negative();
             } else if (rhs == negative()) {
                 return positive();
-            } else return rhs;
-        } else if (rhs == zero()) {
-            return lhs;
-        } else if (lhs == divbyzero() || rhs == divbyzero()) {
-            return divbyzero();
+            // 0 - maybezero is maybezero, 0 - notzero is notzero
+            } else return rhs; 
         } else {
             return maybezero(); // TODO are there no more cases?
         }
     }
 
     private AnnotationMirror timesTransfer(AnnotationMirror lhs, AnnotationMirror rhs) {
+        // if we know the sign we can determine precisely the lattice point
         if (lhs == positive() && rhs == negative() 
                 || rhs == positive() && lhs == negative()) {
             return negative();
@@ -169,20 +171,19 @@ public class DivByZeroTransfer extends CFTransfer {
             return zero();
         } else if (lhs == maybezero() || rhs == maybezero()) {
             return maybezero();
-        } else if (lhs == divbyzero() || rhs == divbyzero()) {
-            return divbyzero();
         } else return notzero();        
     }
 
     private AnnotationMirror modTransfer(AnnotationMirror lhs, AnnotationMirror rhs) {
-        // TODO I do not know the right way to calculate the result of mod with negatives...
+        // I'm not sure what % with negatives should return. It seems language-dependent
+        // Just going to roll with "Not zero" for now.
+        // Essentially only a partial function because of the division by zero case (ret. top)
         if (lhs == positive() && rhs == positive()) {
             return positive();
         } else if (lhs == negative() || rhs == negative()
                     || lhs == notzero() || rhs == notzero()) {
             return notzero();
-        } else if (rhs == zero ()|| rhs == maybezero()) {
-            return divbyzero();
+        // mod of 0 is always 0
         } else if (lhs == zero()) {
             return zero();
         } else if (lhs == maybezero()) {
@@ -191,10 +192,10 @@ public class DivByZeroTransfer extends CFTransfer {
     }
 
     private AnnotationMirror divideTransfer(AnnotationMirror lhs, AnnotationMirror rhs) {
-        if (rhs == zero() || rhs == maybezero()) {
-            return divbyzero(); // TODO ultimately not sure I see a use for MaybeZero
-        } else if (lhs == zero() || lhs == maybezero()) {
+        // Essentially only a partial function because of the division by zero case (ret. top)
+        if (lhs == zero() || lhs == maybezero()) {
             return lhs;
+        // again, if we know the sign, we know it precisely
         } else if (lhs == positive() && rhs == positive()) {
             return positive();
         } else if (lhs == positive() && rhs == negative() 
@@ -203,6 +204,7 @@ public class DivByZeroTransfer extends CFTransfer {
         } else if ((lhs == positive() || lhs == negative()) &&
                     (rhs == lhs)) {
             return positive();
+        // otherwise, well, it's not zero
         } else if (lhs == notzero() || rhs == notzero()) {
             return notzero();
         } else return top();
@@ -285,10 +287,6 @@ public class DivByZeroTransfer extends CFTransfer {
     
     private AnnotationMirror zero() {
         return reflect(Zero.class);
-    }
-
-    private AnnotationMirror divbyzero() {
-        return reflect(DivByZero.class);
     }
 
     /** Convert a "Class" object (e.g. "Top.class") to a point in the lattice */

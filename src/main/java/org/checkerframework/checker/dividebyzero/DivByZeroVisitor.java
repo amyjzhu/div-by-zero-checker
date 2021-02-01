@@ -30,14 +30,6 @@ public class DivByZeroVisitor extends BaseTypeVisitor<DivByZeroAnnotatedTypeFact
      */
     private boolean errorAt(BinaryTree node) {
         // A BinaryTree represents a binary operator, like + or -.
-        if (hasAnnotation(node, DivByZero.class)) {
-            return true;
-        }
-
-        if (hasAnnotation(node.getLeftOperand(), DivByZero.class) || hasAnnotation(node.getRightOperand(), DivByZero.class)) {
-            return true;
-        }
-
         if ((hasAnnotation(node.getRightOperand(), Zero.class) || hasAnnotation(node.getRightOperand(), MaybeZero.class)) 
                 && (node.getKind() == Tree.Kind.DIVIDE || node.getKind() == Tree.Kind.REMAINDER)) {
             return true;
@@ -54,11 +46,11 @@ public class DivByZeroVisitor extends BaseTypeVisitor<DivByZeroAnnotatedTypeFact
     private boolean errorAt(CompoundAssignmentTree node) {
         // A CompoundAssignmentTree represents a binary operator plus assignment,
         // like "x += 10".
-        // TODO do these have to be different?
-        // TODO must you check each side if I have a DivByZero? have to figure it out
-        if (hasAnnotation(node, DivByZero.class)) {
+        if ((hasAnnotation(node.getExpression(), Zero.class) || hasAnnotation(node.getExpression(), MaybeZero.class)) 
+                && (node.getKind() == Tree.Kind.DIVIDE_ASSIGNMENT || node.getKind() == Tree.Kind.REMAINDER_ASSIGNMENT)) {
             return true;
         }
+
         return false;
     }
 

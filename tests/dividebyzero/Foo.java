@@ -146,6 +146,16 @@ class Foo {
         int d = 1 / b;
     }
 
+    public static void zeroMinus() {
+        // 0 minus notzero is notzero
+        int a = -4 % -5;
+
+        int b = 1 / (0 - a);
+
+        // zero minus positive is negative
+        int c = 1 / (0 - 4);
+    }
+
     public static void divideZero() {
         int a = 4 - 3;
 
@@ -210,6 +220,17 @@ class Foo {
             // :: error: divide.by.zero
             int l = b / h;
         }
+
+        // also, mod of a nonzero is nonzero
+        int m = c % d;
+        int n = 4 / m;
+    }
+
+    public static void modZero() {
+        int a = 0 % 5;
+
+        // :: error: divide.by.zero 
+        int b = 1 / a;
     }
 
 }
