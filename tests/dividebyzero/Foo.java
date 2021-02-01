@@ -137,4 +137,79 @@ class Foo {
         b /= (3 * 0);
     }
 
+    /// ====
+    public static void plusZero() {
+        int a = 4 - 0;
+        int b = -3 + 0;
+
+        int c = 1 / a;
+        int d = 1 / b;
+    }
+
+    public static void divideZero() {
+        int a = 4 - 3;
+
+        // both are "maybe zero"
+        int b = a / 5;
+        int c = 0 / 5;
+
+        // :: error: divide.by.zero
+        int d = a / b;
+        // :: error: divide.by.zero
+        int e = c / b;
+    }
+
+    public static void nonsafeAddition() {
+        // :: error: divide.by.zero
+        int a = 1 / (2 + -3);
+
+        // :: error: divide.by.zero
+        int b = -1 / (-4 + 6);
+    }
+
+    public static void nonsafeSubtraction() {
+        // :: error: divide.by.zero
+        int a = 1 / (2 - 3);
+
+        // this is okay 
+        int b = -1 / (4 - -6);
+
+        // :: error: divide.by.zero
+        int c = -1 / (-4 - -6);
+    }
+
+    public static void negativeRemainder() {
+        int a = -4;
+        int b = 3;
+
+        int c = a % b; // nonzero element
+        int d = b % a;
+
+        // this is fine, they're not zero
+        int e = a / c;
+        int f = b / d;
+
+        int g = a + c;
+        int h = b + d; // now it could be zero
+
+        // :: error: divide.by.zero
+        int i = b / g;
+
+        // :: error: divide.by.zero
+        int j = a / h;
+
+        // but if we refine...
+        if (g > 0) {
+            int k = a / g;
+            if (h < 0) {
+                int l = b / h;
+            }
+        } else {
+            // :: error: divide.by.zero
+            int k = a / g;
+            // :: error: divide.by.zero
+            int l = b / h;
+        }
+    }
+
 }
