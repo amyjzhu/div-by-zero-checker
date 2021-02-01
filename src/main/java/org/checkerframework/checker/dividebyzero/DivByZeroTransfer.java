@@ -79,7 +79,7 @@ public class DivByZeroTransfer extends CFTransfer {
         // TODO write your own cases
         
         // will glb be helpful?
-/*
+
         switch (operator){
             case EQ: // glb with the rhs determined?
                 return glb(lhs, rhs);
@@ -104,7 +104,7 @@ public class DivByZeroTransfer extends CFTransfer {
             case GT:
                 if (rhs.equals(zero()) || rhs.equals(positive())) return glb(lhs, positive());
                 return glb(lhs, maybezero());
-        }*/
+        }
 
         return lhs;
     }
@@ -128,7 +128,7 @@ public class DivByZeroTransfer extends CFTransfer {
             AnnotationMirror lhs,
             AnnotationMirror rhs) {
         // TODO refactor. maybe with functions like sameType or whatnot
-        /*
+        
         switch (operator) {
             case PLUS:
                 if (lhs == positive() && rhs == positive()) {
@@ -213,7 +213,7 @@ public class DivByZeroTransfer extends CFTransfer {
                     return notzero();
                 } else return top();
             }
-*/
+
             return top();
     }
 
@@ -239,7 +239,7 @@ public class DivByZeroTransfer extends CFTransfer {
     private AnnotationMirror glb(AnnotationMirror x, AnnotationMirror y) {
         return analysis.getTypeFactory().getQualifierHierarchy().greatestLowerBound(x, y);
     }
-/*
+
     private AnnotationMirror positive() {
         return reflect(Positive.class);
     }
@@ -262,7 +262,7 @@ public class DivByZeroTransfer extends CFTransfer {
 
     private AnnotationMirror divbyzero() {
         return reflect(DivByZero.class);
-    }*/
+    }
 
     /** Convert a "Class" object (e.g. "Top.class") to a point in the lattice */
     private AnnotationMirror reflect(Class<? extends Annotation> qualifier) {
