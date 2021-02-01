@@ -72,6 +72,40 @@ public class DivByZeroTransfer extends CFTransfer {
             AnnotationMirror lhs,
             AnnotationMirror rhs) {
         // TODO
+        // ASsuming that this returns true
+        // then the
+        // three cases: if it is less than zero or possibly zero
+        // well, possibly zero is complicated... 
+        // TODO write your own cases
+        
+        // will glb be helpful?
+/*
+        switch (operator){
+            case EQ: // glb with the rhs determined?
+                return glb(lhs, rhs);
+            case NE:
+                if (rhs.equals(zero())) {
+                    return glb(lhs, notzero());
+                } // what if it's a possibly zero? it's still the same...
+                else if (rhs.equals(maybezero())) {
+                    return glb(lhs, rhs);
+                } else {
+                    return lhs; // probably still the same
+                }
+            case LE:
+                if (rhs.equals(negative())) return glb(lhs, negative());
+                return glb(lhs, maybezero());
+            case LT:
+                if (rhs.equals(zero()) || rhs.equals(negative())) return glb(lhs, negative());
+                return glb(lhs, maybezero());
+            case GE:
+                if (rhs.equals(positive())) return glb(lhs, positive());
+                return glb(lhs, maybezero());
+            case GT:
+                if (rhs.equals(zero()) || rhs.equals(positive())) return glb(lhs, positive());
+                return glb(lhs, maybezero());
+        }*/
+
         return lhs;
     }
 
@@ -93,8 +127,94 @@ public class DivByZeroTransfer extends CFTransfer {
             BinaryOperator operator,
             AnnotationMirror lhs,
             AnnotationMirror rhs) {
-        // TODO
-        return top();
+        // TODO refactor. maybe with functions like sameType or whatnot
+        /*
+        switch (operator) {
+            case PLUS:
+                if (lhs == positive() && rhs == positive()) {
+                    return positive();
+                } else if (lhs == negative() && rhs == negative()) {
+                    return negative();
+                } else if (lhs == zero() && rhs == zero()) {
+                    return zero(); // TODO I don't think this case is necessary b/c of below
+                } else if (lhs == zero()) {
+                    return rhs; // could be anything
+                } else if (rhs == zero()) {
+                    return lhs;
+                } else if (lhs == divbyzero() || rhs == divbyzero()) {
+                    return divbyzero();
+                } else { // e,g. NotZero plus either Pos, Neg, or NotZero
+                    return maybezero(); // TODO are there no more cases?
+                }
+            case MINUS:
+                if (lhs == positive() && rhs == negative()) {
+                    return positive();
+                } else if (lhs == negative() && rhs == positive()) {
+                    return negative();
+                } else if (lhs == zero() && rhs == zero()) {
+                    return zero();
+                } else if (lhs == zero()) {
+                    if (rhs == positive()) {
+                        return negative();
+                    } else if (rhs == negative()) {
+                        return positive();
+                    } else return rhs;
+                } else if (rhs == zero()) {
+                    return lhs;
+                } else if (lhs == divbyzero() || rhs == divbyzero()) {
+                    return divbyzero();
+                } else {
+                    return maybezero(); // TODO are there no more cases?
+                }
+            case TIMES:
+                if (lhs == positive() && rhs == negative() 
+                || rhs == positive() && lhs == negative()) {
+                    return negative();
+                } else if ((lhs == positive() || lhs == negative()) &&
+                            (rhs == lhs)) {
+                    return positive();
+                } else if (lhs == zero() || rhs == zero()) {
+                    return zero();
+                } else if (lhs == maybezero() || rhs == maybezero()) {
+                    return maybezero();
+                } else if (lhs == divbyzero() || rhs == divbyzero()) {
+                    return divbyzero();
+                } else return notzero();
+            case MOD:
+    // TODO I do not know the right way to calculate the result of mod with negatives...
+                if (lhs == positive() && rhs == positive()) {
+                    return positive();
+                } else if (lhs == negative() || rhs == negative()
+                            || lhs == notzero() || rhs == notzero()) {
+                    return notzero();
+                } else if (rhs == zero ()|| rhs == maybezero()) {
+                    return divbyzero();
+                } else if (lhs == zero()) {
+                    return zero();
+                } else if (lhs == maybezero()) {
+                    return maybezero();
+                } else return top();
+            case DIVIDE:
+                if (rhs == zero() || lhs == maybezero()) {
+                    return divbyzero(); // TODO ultimately not sure I see a use for MaybeZero
+                } else if (lhs == zero()) {
+                    return zero();
+                } else if (lhs == maybezero()) {
+                    return maybezero();
+                } else if (lhs == positive() && rhs == positive()) {
+                    return positive();
+                } else if (lhs == positive() && rhs == negative() 
+                            || rhs == positive() && lhs == negative()) {
+                    return negative();
+                } else if ((lhs == positive() || lhs == negative()) &&
+                            (rhs == lhs)) {
+                    return positive();
+                } else if (lhs == notzero() || rhs == notzero()) {
+                    return notzero();
+                } else return top();
+            }
+*/
+            return top();
     }
 
     // ========================================================================
@@ -119,6 +239,30 @@ public class DivByZeroTransfer extends CFTransfer {
     private AnnotationMirror glb(AnnotationMirror x, AnnotationMirror y) {
         return analysis.getTypeFactory().getQualifierHierarchy().greatestLowerBound(x, y);
     }
+/*
+    private AnnotationMirror positive() {
+        return reflect(Positive.class);
+    }
+    
+    private AnnotationMirror negative() {
+        return reflect(Negative.class);
+    }
+    
+    private AnnotationMirror notzero() {
+        return reflect(NotZero.class);
+    }
+    
+    private AnnotationMirror maybezero() {
+        return reflect(MaybeZero.class);
+    }
+    
+    private AnnotationMirror zero() {
+        return reflect(Zero.class);
+    }
+
+    private AnnotationMirror divbyzero() {
+        return reflect(DivByZero.class);
+    }*/
 
     /** Convert a "Class" object (e.g. "Top.class") to a point in the lattice */
     private AnnotationMirror reflect(Class<? extends Annotation> qualifier) {

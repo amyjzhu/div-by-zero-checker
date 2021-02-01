@@ -30,7 +30,9 @@ public class DivByZeroVisitor extends BaseTypeVisitor<DivByZeroAnnotatedTypeFact
      */
     private boolean errorAt(BinaryTree node) {
         // A BinaryTree represents a binary operator, like + or -.
-        // TODO
+        // if (hasAnnotation(node, DivByZero.class)) {
+        //     return true;
+        // }
         return false;
     }
 
@@ -43,7 +45,11 @@ public class DivByZeroVisitor extends BaseTypeVisitor<DivByZeroAnnotatedTypeFact
     private boolean errorAt(CompoundAssignmentTree node) {
         // A CompoundAssignmentTree represents a binary operator plus assignment,
         // like "x += 10".
-        // TODO
+        // TODO do these have to be different?
+        // TODO must you check each side if I have a DivByZero? have to figure it out
+        // if (hasAnnotation(node, DivByZero.class)) {
+        //     return true;
+        // }
         return false;
     }
 
